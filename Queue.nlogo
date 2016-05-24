@@ -1,4 +1,5 @@
-globals [ queue-list countdown-new countdown-serve ]
+extensions [array]
+globals [ queue-list countdown-serve-list countdown-new]
 
 to setup
   clear-all
@@ -6,32 +7,40 @@ to setup
   set queue-list []
   set queue-list add-to-queue queue-list at-start
   set countdown-new time-new
-  set countdown-serve time-serve
+  setup-serve-list
+  ;;set countdown-serve time-serve
   reset-ticks
+end
+
+to setup-serve-list
+  set countdown-serve-list (n-values number-of-employees [time-serve])
 end
 
 to go
   ;; Check if finished serving
-  set countdown-serve countdown-serve - 1
-  if countdown-serve = 0
-  [
-    if length queue-list > 0
-    [
-      ask turtle first queue-list [die]
-      set queue-list bf queue-list
-    ]
 
-    if length queue-list > 0
+  foreach countdown-serve-list
+  [
+    set ? ? - 1
+    if ? = 0
     [
-      ask turtle first queue-list [set color red]
-      ;; Move everyone ahead
-      foreach queue-list [
-        ask turtle ? [
-          fd 1
-        ]
+      if length queue-list > 0
+      [
+        ask turtle first queue-list [die]
+        set queue-list bf queue-list
       ]
+      if length queue-list > 0
+      [
+       ask turtle first queue-list [set color red]
+       ;; Move everyone ahead
+       foreach queue-list [
+         ask turtle ? [
+           fd 1
+         ]
+       ]
+      ]
+      set ? time-serve
     ]
-    set countdown-serve time-serve
   ]
 
   ;; Check if somebody arrived
@@ -136,7 +145,7 @@ time-new
 time-new
 1
 50
-7
+5
 1
 1
 tick
@@ -185,7 +194,7 @@ time-serve
 time-serve
 0
 50
-17
+1
 1
 1
 tick
