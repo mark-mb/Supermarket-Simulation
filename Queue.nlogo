@@ -1,5 +1,5 @@
-extensions [array]
-globals [ queue-list countdown-serve-list countdown-new]
+extensions [ array ]
+globals [ queue-list countdown-serve-list countdown-new ]
 
 to setup
   clear-all
@@ -13,34 +13,59 @@ to setup
 end
 
 to setup-serve-list
-  set countdown-serve-list (n-values number-of-employees [time-serve])
+  let tmp_list n-values number-of-employees [list time-serve -1]
+  set countdown-serve-list array:from-list tmp_list
 end
 
 to go
   ;; Check if finished serving
-
-  foreach countdown-serve-list
+  foreach (n-values array:length countdown-serve-list [?])
   [
-    set ? ? - 1
-    if ? = 0
+    let cur_serv array:item countdown-serve-list ?
+    let cur_cd (item 0 cur_serv) - 1
+    let cur_turt item 1 cur_serv
+
+    if cur_cd = 0
     [
+      show ?
+      show cur_serv
+      set cur_cd time-serve
+      if turtle cur_turt != nobody
+      [
+        ask turtle cur_turt [die]
+      ]
+
       if length queue-list > 0
       [
-        ask turtle first queue-list [die]
+        ;; Move ahead
+        foreach queue-list [
+          ask turtle ? [
+            let ahead one-of turtles-on patch-ahead 1
+            if ahead = nobody
+            [
+              fd 1
+            ]
+          ]
+        ]
+
+        set cur_turt first queue-list
         set queue-list bf queue-list
+
+        ;; Solve slightly the problem of the whole queue moving
+        let first-queue one-of turtles-on patch 0 0
+        if first-queue = nobody
+        [
+          ask turtle cur_turt [
+            set xcor 0
+          ]
+        ]
+
+        ask turtle cur_turt [set color red]
       ]
-      if length queue-list > 0
-      [
-       ask turtle first queue-list [set color red]
-       ;; Move everyone ahead
-       foreach queue-list [
-         ask turtle ? [
-           fd 1
-         ]
-       ]
-      ]
-      set ? time-serve
     ]
+
+    let new_cur_serv list cur_cd cur_turt
+    array:set countdown-serve-list ? new_cur_serv
   ]
 
   ;; Check if somebody arrived
@@ -194,7 +219,7 @@ time-serve
 time-serve
 0
 50
-1
+10
 1
 1
 tick
@@ -224,7 +249,7 @@ number-of-employees
 number-of-employees
 1
 5
-1
+2
 1
 1
 NIL
