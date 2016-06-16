@@ -1,6 +1,10 @@
 globals [
-  zones-pxcor
-  cues-pxcor
+  zona-peix-pxcor
+  zona-forn-pxcor
+  zona-carn-pxcor
+  zona-fruita-pxcor
+  zona-prestatges-pxcor
+  zona-caixes-pxcor
 ]
 
 breed [mechanisms treballador] ;;Treballadors. Són un actius
@@ -11,10 +15,36 @@ entities-own [routeId]
 
 to setup
  clear-all
- set zones-pxcor 10
- set cues-pxcor -10
+ set zona-carn-pxcor 10
+  set zona-peix-pxcor 5
+  setup-carn
 
- ask patches with [zones-pxcor = pxcor ] [set  pcolor white - 2]
+
+end
+
+to setup-carn
+  ask patches with [zona-carn-pxcor = pxcor ] [set  pcolor white - 2]
+   ask n-of num-treb-carn patches with [(zona-carn-pxcor = pxcor) ] [
+    sprout-mechanisms 1 [
+      set label "carnisser"
+      set color red
+      set shape "person"
+      set size 2
+    ]
+  ]
+end
+
+
+to setup-peix
+  ask patches with [zona-peix-pxcor = pxcor ] [set  pcolor red - 2]
+   ask n-of num-treb-peix patches with [(zona-peix-pxcor = pxcor) ] [
+    sprout-mechanisms 1 [
+      set label "peixater"
+      set color blue
+      set shape "person"
+      set size 2
+    ]
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -134,6 +164,21 @@ num-treb-caixes
 1
 1
 persones
+HORIZONTAL
+
+SLIDER
+18
+92
+190
+125
+num-zones
+num-zones
+1
+10
+1
+1
+1
+zones
 HORIZONTAL
 
 @#$#@#$#@
