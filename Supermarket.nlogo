@@ -5,6 +5,9 @@ globals [
   zona-fruita-pxcor
   zona-prestatges-pxcor
   zona-caixes-pxcor
+  ;;Graphics
+  starting-point
+  margin-between-zones
 ]
 
 breed [mechanisms treballador] ;;Treballadors. Són un actius
@@ -15,14 +18,89 @@ entities-own [routeId]
 
 to setup
  clear-all
- set zona-carn-pxcor 10
-  set zona-peix-pxcor 5
+ set margin-between-zones 5
+ set starting-point -13
+  setup-prestatges
+  setup-fruita
+  setup-forn
+  setup-peix
   setup-carn
-
-
+  setup-caixes
 end
 
+
+;; ------------------- PRESTATGERIES -------------------
+to setup-prestatges
+
+  set zona-prestatges-pxcor starting-point
+  ask patches with [zona-prestatges-pxcor = pxcor ] [set  pcolor yellow - 2]
+  ask n-of 1 patches with [(zona-prestatges-pxcor = pxcor) ] [
+    sprout-mechanisms 1 [
+      set label "(Prestatges)"
+      set color white
+      set shape "person"
+      set size 0
+    ]
+  ]
+end
+
+
+
+;; ------------------- FRUITA  -------------------
+to setup-fruita
+
+    set zona-fruita-pxcor zona-prestatges-pxcor + margin-between-zones
+
+  ask patches with [zona-fruita-pxcor = pxcor ] [set  pcolor blue - 2]
+   ask n-of num-treb-fruita patches with [(zona-fruita-pxcor = pxcor) ] [
+    sprout-mechanisms 1 [
+      set label "fruiter"
+      set color white
+      set shape "person"
+      set size 2
+    ]
+  ]
+end
+
+
+;; ------------------- FORN  -------------------
+to setup-forn
+
+    set zona-forn-pxcor zona-fruita-pxcor + margin-between-zones
+
+  ask patches with [zona-forn-pxcor = pxcor ] [set  pcolor green - 2]
+   ask n-of num-treb-forn patches with [(zona-forn-pxcor = pxcor) ] [
+    sprout-mechanisms 1 [
+      set label "forner"
+      set color yellow
+      set shape "person"
+      set size 2
+    ]
+  ]
+end
+
+;; ------------------- PEIX  -------------------
+to setup-peix
+
+    set zona-peix-pxcor zona-forn-pxcor + margin-between-zones
+
+  ask patches with [zona-peix-pxcor = pxcor ] [set  pcolor red - 2]
+   ask n-of num-treb-peix patches with [(zona-peix-pxcor = pxcor) ] [
+    sprout-mechanisms 1 [
+      set label "peixater"
+      set color blue
+      set shape "person"
+      set size 2
+    ]
+  ]
+end
+
+
+;; ------------------- CARN  -------------------
 to setup-carn
+
+   set zona-carn-pxcor zona-peix-pxcor + margin-between-zones
+
   ask patches with [zona-carn-pxcor = pxcor ] [set  pcolor white - 2]
    ask n-of num-treb-carn patches with [(zona-carn-pxcor = pxcor) ] [
     sprout-mechanisms 1 [
@@ -35,12 +113,16 @@ to setup-carn
 end
 
 
-to setup-peix
-  ask patches with [zona-peix-pxcor = pxcor ] [set  pcolor red - 2]
-   ask n-of num-treb-peix patches with [(zona-peix-pxcor = pxcor) ] [
+;; ------------------- CAIXES  -------------------
+to setup-caixes
+
+    set zona-caixes-pxcor zona-carn-pxcor + margin-between-zones + 5 ;; 5 extra to separate caixes from other zones
+
+  ask patches with [zona-caixes-pxcor = pxcor ] [set  pcolor red - 2]
+   ask n-of num-treb-caixes patches with [(zona-caixes-pxcor = pxcor) ] [
     sprout-mechanisms 1 [
-      set label "peixater"
-      set color blue
+      set label "caixer"
+      set color white
       set shape "person"
       set size 2
     ]
@@ -50,9 +132,9 @@ end
 GRAPHICS-WINDOW
 210
 10
-649
+805
 470
-16
+22
 16
 13.0
 1
@@ -64,8 +146,8 @@ GRAPHICS-WINDOW
 1
 1
 1
--16
-16
+-22
+22
 -16
 16
 0
@@ -92,10 +174,10 @@ NIL
 1
 
 SLIDER
-724
-22
-956
-55
+1052
+27
+1284
+60
 num-treb-carn
 num-treb-carn
 1
@@ -107,25 +189,25 @@ persones
 HORIZONTAL
 
 SLIDER
-728
-75
-956
-108
+1056
+80
+1284
+113
 num-treb-fruita
 num-treb-fruita
 1
 10
-1
+3
 1
 1
 persones
 HORIZONTAL
 
 SLIDER
-730
-127
-949
-160
+1058
+132
+1277
+165
 num-treb-peix
 num-treb-peix
 1
@@ -137,25 +219,25 @@ persones
 HORIZONTAL
 
 SLIDER
-725
-172
-953
-205
+1053
+177
+1281
+210
 num-treb-forn
 num-treb-forn
 1
 10
-1
+3
 1
 1
 persones
 HORIZONTAL
 
 SLIDER
-730
-218
-965
-251
+1058
+223
+1293
+256
 num-treb-caixes
 num-treb-caixes
 1
