@@ -61,6 +61,8 @@ to setup-prestatges
       set color white
       set shape "person"
       set size 0
+      setxy zona-prestatges-pxcor 0
+      ask patches with [pycor = [pycor] of myself]  [if (pxcor < zona-prestatges-pxcor) [set pcolor turquoise]]
     ]
   ]
 end
@@ -86,6 +88,7 @@ to setup-fruita
       set size 2
     ]
   ]
+   ask patches with [( pxcor <  zona-fruita-pxcor) and (pxcor > zona-prestatges-pxcor) and pycor = 10] [set pcolor turquoise]
 end
 
 
@@ -103,6 +106,7 @@ to setup-forn
       set size 2
     ]
   ]
+      ask patches with [( pxcor <  zona-forn-pxcor) and (pxcor > zona-fruita-pxcor) and pycor = 5] [set pcolor turquoise]
 end
 
 ;; ------------------- PEIX  -------------------
@@ -119,6 +123,7 @@ to setup-peix
       set size 2
     ]
   ]
+  ask patches with [( pxcor <  zona-peix-pxcor) and (pxcor > zona-forn-pxcor) and pycor = 0] [set pcolor turquoise]
 end
 
 
@@ -136,6 +141,7 @@ to setup-carn
       set size 2
     ]
   ]
+     ask patches with [( pxcor <  zona-carn-pxcor) and (pxcor > zona-peix-pxcor) and pycor = -5] [set pcolor turquoise]
 end
 
 
@@ -153,6 +159,7 @@ to setup-caixes
       set size 2
     ]
   ]
+  ask patches with [( pxcor <  zona-caixes-pxcor) and (pxcor > zona-carn-pxcor) and pycor = -15] [set pcolor turquoise]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
