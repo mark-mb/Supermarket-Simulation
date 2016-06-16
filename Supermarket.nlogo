@@ -8,6 +8,7 @@ globals [
   zona-fruita-pxcor
   queue-fruita
   zona-prestatges-pxcor
+  queue-prestatges
   zona-caixes-pxcor
   queue-caixes
   ;;Graphics
@@ -26,11 +27,12 @@ treballadors-own [
 ]
 
 clients-own [
-  visitedCarn
-  visitedPeix
-  visitedPa
-  visitedFruita
-  visitedPrestatges
+  visited-carn
+  visited-peix
+  visited-forn
+  visited-fruita
+  visited-prestatges
+  visited-caixes
 ]
 
 to setup
@@ -61,11 +63,13 @@ to create-user
       set color blue
       set shape "person"
       set size 1
-      set visitedCarn false
-      set visitedPeix false
-      set visitedPa false
-      set visitedFruita false
-      set visitedPrestatges false]]
+      set visited-carn false
+      set visited-peix false
+      set visited-forn false
+      set visited-fruita false
+      set visited-prestatges false
+      set visited-caixes false
+  ]]
   set contador contador + 1 ]
 end
 
@@ -179,7 +183,7 @@ to go
   print contador
   ask treballadors
   [
-    set serving-cd = serving-cd - 1
+    set serving-cd (serving-cd - 1)
     if serving-cd = 0
     [
       set serving-cd serving-time
@@ -214,7 +218,7 @@ to go
             if length queue-peix > 0
             [
               set serving-client first queue-peix
-              set queue-forn bf queue-peix
+              set queue-peix bf queue-peix
               move-queue queue-peix
             ]
           ]
@@ -224,7 +228,7 @@ to go
               if length queue-carn > 0
               [
                 set serving-client first queue-carn
-                set queue-forn bf queue-carn
+                set queue-carn bf queue-carn
                 move-queue queue-carn
               ]
             ]
@@ -234,7 +238,7 @@ to go
                 if length queue-caixes > 0
                 [
                   set serving-client first queue-caixes
-                  set queue-forn bf queue-caixes
+                  set queue-caixes bf queue-caixes
                   move-queue queue-caixes
                 ]
               ]
@@ -246,8 +250,53 @@ to go
   ]
 end
 
-to move-client [client]
-
+to move-client [clt]
+  ask client clt
+  [
+    ifelse not visited-prestatges
+    [
+      set queue-prestatges lput clt queue-prestatges
+      set visited-prestatges true
+    ]
+    [
+      ifelse not visited-fruita
+      [
+        set queue-fruita lput clt queue-fruita
+        set visited-fruita true
+      ]
+      [
+        ifelse not visited-forn
+        [
+          set queue-forn lput clt queue-forn
+          set visited-forn true
+        ]
+        [
+          ifelse not visited-carn
+          [
+            set queue-carn lput clt queue-carn
+            set visited-carn true
+          ]
+          [
+            ifelse not visited-peix
+            [
+              set queue-peix lput clt queue-peix
+              set visited-peix true
+            ]
+            [
+              ifelse not visited-caixes
+              [
+                set queue-caixes lput clt queue-caixes
+                set visited-caixes true
+              ]
+              [
+                die
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
+  ]
 end
 
 to move-queue [queue]
