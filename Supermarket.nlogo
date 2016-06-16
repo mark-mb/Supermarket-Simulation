@@ -8,7 +8,6 @@ globals [
   zona-fruita-pxcor
   queue-fruita
   zona-prestatges-pxcor
-  queue-prestatges
   zona-caixes-pxcor
   queue-caixes
   ;;Graphics
@@ -18,7 +17,7 @@ globals [
 ]
 
 breed [treballadors treballador] ;;Treballadors. Són un actius
-breed [clients client]        ;;Clients, passius
+breed [clients client]           ;;Clients, passius
 
 treballadors-own [
   serving-time
@@ -33,6 +32,7 @@ clients-own [
   visited-fruita
   visited-prestatges
   visited-caixes
+  prestatges-cd
 ]
 
 to setup
@@ -40,6 +40,8 @@ to setup
   set margin-between-zones 5
   set starting-point -13
   set contador 0
+  ;; TODO: per a cada zona, per a cada treballador, fer un set de serving-time i de serving-cd
+  ;; TODO (a la v2): en lloc de serving-time, serving-time-max i serving-time-min, per a que sigui una distribucio
   setup-prestatges
   setup-fruita
   setup-forn
@@ -59,6 +61,7 @@ to setup-entrada
 end
 
 to create-user
+  ;; TODO Cridar a move-client amb el id d'aquest (who)
   if random 2 < 1 [ask n-of 1 patches [ sprout-clients 1 [
       set color blue
       set shape "person"
@@ -177,7 +180,7 @@ to setup-caixes
   ask patches with [( pxcor <  zona-caixes-pxcor) and (pxcor > zona-carn-pxcor) and pycor = -15] [set pcolor turquoise]
 end
 
-
+;; GO
 to go
   create-user
   print contador
@@ -192,7 +195,6 @@ to go
         move-client serving-client
       ]
 
-      ;; prestatgeries??
       ifelse label = "fruita"
       [
         if length queue-fruita > 0
@@ -248,14 +250,21 @@ to go
       ]
     ]
   ]
+
+  ask clients with [prestatges-cd > 0]
+  [
+     set prestatges-cd prestatges-cd - 1
+  ]
 end
 
 to move-client [clt]
   ask client clt
   [
+    ;; TODO: Actualitzar grafic del client a la cua que toqui
+    ;; TODO (a la v2): Fer un algorisme de selecció de cua
     ifelse not visited-prestatges
     [
-      set queue-prestatges lput clt queue-prestatges
+      set prestatges-cd 50 ;; TODO: Variable o slider o min/max per al temps de prestages
       set visited-prestatges true
     ]
     [
@@ -300,6 +309,7 @@ to move-client [clt]
 end
 
 to move-queue [queue]
+  ;; TODO: avancar graficament els elements de la cua queue
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -428,7 +438,7 @@ BUTTON
 199
 NIL
 go
-NIL
+T
 1
 T
 OBSERVER
