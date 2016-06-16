@@ -8,26 +8,47 @@ globals [
   ;;Graphics
   starting-point
   margin-between-zones
+  contador
 ]
 
-breed [mechanisms treballador] ;;Treballadors. Són un actius
-breed [entities client]        ;;Clients, passius
+breed [treballadors treballador] ;;Treballadors. Són un actius
+breed [clients client]        ;;Clients, passius
 
-mechanisms-own [servingTime]
-entities-own [routeId]
-
+treballadors-own [servingTime]
+clients-own [visitedCarn  visitedPeix visitedPa visitedFruita visitedPrestatges]
 to setup
  clear-all
  set margin-between-zones 5
  set starting-point -13
+ set contador 0
   setup-prestatges
   setup-fruita
   setup-forn
   setup-peix
   setup-carn
   setup-caixes
+  setup-entrada
 end
 
+to setup-entrada
+  ask n-of 1 patches [ sprout-clients 1 [
+      set color blue
+      set shape "person"
+      set size 1]]
+end
+
+to create-user
+  if random 2 < 1 [ask n-of 1 patches [ sprout-clients 1 [
+      set color blue
+      set shape "person"
+      set size 1
+      set visitedCarn false
+      set visitedPeix false
+      set visitedPa false
+      set visitedFruita false
+      set visitedPrestatges false]]
+  set contador contador + 1 ]
+end
 
 ;; ------------------- PRESTATGERIES -------------------
 to setup-prestatges
@@ -35,7 +56,7 @@ to setup-prestatges
   set zona-prestatges-pxcor starting-point
   ask patches with [zona-prestatges-pxcor = pxcor ] [set  pcolor yellow - 2]
   ask n-of 1 patches with [(zona-prestatges-pxcor = pxcor) ] [
-    sprout-mechanisms 1 [
+    sprout-treballadors 1 [
       set label "(Prestatges)"
       set color white
       set shape "person"
@@ -45,6 +66,11 @@ to setup-prestatges
 end
 
 
+to go
+  create-user
+  print contador
+end
+
 
 ;; ------------------- FRUITA  -------------------
 to setup-fruita
@@ -53,7 +79,7 @@ to setup-fruita
 
   ask patches with [zona-fruita-pxcor = pxcor ] [set  pcolor blue - 2]
    ask n-of num-treb-fruita patches with [(zona-fruita-pxcor = pxcor) ] [
-    sprout-mechanisms 1 [
+    sprout-treballadors 1 [
       set label "fruiter"
       set color white
       set shape "person"
@@ -70,7 +96,7 @@ to setup-forn
 
   ask patches with [zona-forn-pxcor = pxcor ] [set  pcolor green - 2]
    ask n-of num-treb-forn patches with [(zona-forn-pxcor = pxcor) ] [
-    sprout-mechanisms 1 [
+    sprout-treballadors 1 [
       set label "forner"
       set color yellow
       set shape "person"
@@ -86,7 +112,7 @@ to setup-peix
 
   ask patches with [zona-peix-pxcor = pxcor ] [set  pcolor red - 2]
    ask n-of num-treb-peix patches with [(zona-peix-pxcor = pxcor) ] [
-    sprout-mechanisms 1 [
+    sprout-treballadors 1 [
       set label "peixater"
       set color blue
       set shape "person"
@@ -103,7 +129,7 @@ to setup-carn
 
   ask patches with [zona-carn-pxcor = pxcor ] [set  pcolor white - 2]
    ask n-of num-treb-carn patches with [(zona-carn-pxcor = pxcor) ] [
-    sprout-mechanisms 1 [
+    sprout-treballadors 1 [
       set label "carnisser"
       set color red
       set shape "person"
@@ -120,7 +146,7 @@ to setup-caixes
 
   ask patches with [zona-caixes-pxcor = pxcor ] [set  pcolor red - 2]
    ask n-of num-treb-caixes patches with [(zona-caixes-pxcor = pxcor) ] [
-    sprout-mechanisms 1 [
+    sprout-treballadors 1 [
       set label "caixer"
       set color white
       set shape "person"
@@ -130,10 +156,10 @@ to setup-caixes
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
-10
-805
-470
+211
+42
+806
+502
 22
 16
 13.0
@@ -158,9 +184,9 @@ ticks
 
 BUTTON
 79
-36
+34
 152
-69
+67
 NIL
 setup
 NIL
@@ -248,20 +274,22 @@ num-treb-caixes
 persones
 HORIZONTAL
 
-SLIDER
-18
-92
-190
-125
-num-zones
-num-zones
+BUTTON
+98
+166
+161
+199
+NIL
+go
+NIL
 1
-10
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
 1
-1
-1
-zones
-HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
