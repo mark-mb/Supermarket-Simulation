@@ -27,8 +27,6 @@ to go
 
     if cur_cd = 0
     [
-      show ?
-      show cur_serv
       set cur_cd time-serve
       if turtle cur_turt != nobody
       [
@@ -37,17 +35,6 @@ to go
 
       if length queue-list > 0
       [
-        ;; Move ahead
-        foreach queue-list [
-          ask turtle ? [
-            let ahead one-of turtles-on patch-ahead 1
-            if ahead = nobody
-            [
-              fd 1
-            ]
-          ]
-        ]
-
         set cur_turt first queue-list
         set queue-list bf queue-list
 
@@ -60,7 +47,24 @@ to go
           ]
         ]
 
-        ask turtle cur_turt [set color red]
+        ask turtle cur_turt [
+          set color red
+          fd 2
+          rt 90
+          fd ?
+          lt 90
+        ]
+
+        ;; Move ahead
+        foreach queue-list [
+          ask turtle ? [
+            let ahead one-of turtles-on patch-ahead 1
+            if ahead = nobody
+            [
+              fd 1
+            ]
+          ]
+        ]
       ]
     ]
 
@@ -80,7 +84,8 @@ to go
 end
 
 to setup-patches
-  if (pycor < 2) and (pycor > -2) [ set pcolor white ]
+  ;if (pycor < 2) and (pycor > -2) [ set pcolor white ]
+  set pcolor white
 end
 
 to-report add-to-queue [queue n]
@@ -105,9 +110,9 @@ GRAPHICS-WINDOW
 14
 251
 869
-399
+451
 32
-4
+6
 13.0
 1
 10
@@ -120,8 +125,8 @@ GRAPHICS-WINDOW
 1
 -32
 32
--4
-4
+-6
+6
 1
 1
 1
@@ -155,7 +160,7 @@ at-start
 at-start
 1
 10
-9
+5
 1
 1
 NIL
@@ -234,7 +239,7 @@ number-of-employees
 number-of-employees
 1
 5
-2
+3
 1
 1
 NIL
