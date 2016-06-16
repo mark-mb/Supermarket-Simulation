@@ -9,6 +9,14 @@ globals [
   starting-point
   margin-between-zones
   contador
+
+  zona-peix-pycor
+  zona-forn-pycor
+  zona-carn-pycor
+  zona-fruita-pycor
+  zona-prestatges-pycor
+  zona-caixes-pycor
+
 ]
 
 breed [treballadors treballador] ;;Treballadors. Són un actius
@@ -54,6 +62,7 @@ end
 to setup-prestatges
 
   set zona-prestatges-pxcor starting-point
+  set zona-prestatges-pycor 0
   ask patches with [zona-prestatges-pxcor = pxcor ] [set  pcolor yellow - 2]
   ask n-of 1 patches with [(zona-prestatges-pxcor = pxcor) ] [
     sprout-treballadors 1 [
@@ -61,7 +70,7 @@ to setup-prestatges
       set color white
       set shape "person"
       set size 0
-      setxy zona-prestatges-pxcor 0
+      setxy zona-prestatges-pxcor zona-prestatges-pycor
       ask patches with [pycor = [pycor] of myself]  [if (pxcor < zona-prestatges-pxcor) [set pcolor turquoise]]
     ]
   ]
@@ -78,7 +87,7 @@ end
 to setup-fruita
 
     set zona-fruita-pxcor zona-prestatges-pxcor + margin-between-zones
-
+    set zona-fruita-pycor 10
   ask patches with [zona-fruita-pxcor = pxcor ] [set  pcolor blue - 2]
    ask n-of num-treb-fruita patches with [(zona-fruita-pxcor = pxcor) ] [
     sprout-treballadors 1 [
@@ -88,7 +97,7 @@ to setup-fruita
       set size 2
     ]
   ]
-   ask patches with [( pxcor <  zona-fruita-pxcor) and (pxcor > zona-prestatges-pxcor) and pycor = 10] [set pcolor turquoise]
+   ask patches with [( pxcor <  zona-fruita-pxcor) and (pxcor > zona-prestatges-pxcor) and pycor = zona-fruita-pycor] [set pcolor turquoise]
 end
 
 
@@ -96,7 +105,7 @@ end
 to setup-forn
 
     set zona-forn-pxcor zona-fruita-pxcor + margin-between-zones
-
+    set zona-forn-pycor 5
   ask patches with [zona-forn-pxcor = pxcor ] [set  pcolor green - 2]
    ask n-of num-treb-forn patches with [(zona-forn-pxcor = pxcor) ] [
     sprout-treballadors 1 [
@@ -106,14 +115,14 @@ to setup-forn
       set size 2
     ]
   ]
-      ask patches with [( pxcor <  zona-forn-pxcor) and (pxcor > zona-fruita-pxcor) and pycor = 5] [set pcolor turquoise]
+      ask patches with [( pxcor <  zona-forn-pxcor) and (pxcor > zona-fruita-pxcor) and pycor = zona-forn-pycor] [set pcolor turquoise]
 end
 
 ;; ------------------- PEIX  -------------------
 to setup-peix
 
     set zona-peix-pxcor zona-forn-pxcor + margin-between-zones
-
+    set zona-peix-pycor 0
   ask patches with [zona-peix-pxcor = pxcor ] [set  pcolor red - 2]
    ask n-of num-treb-peix patches with [(zona-peix-pxcor = pxcor) ] [
     sprout-treballadors 1 [
@@ -123,7 +132,7 @@ to setup-peix
       set size 2
     ]
   ]
-  ask patches with [( pxcor <  zona-peix-pxcor) and (pxcor > zona-forn-pxcor) and pycor = 0] [set pcolor turquoise]
+  ask patches with [( pxcor <  zona-peix-pxcor) and (pxcor > zona-forn-pxcor) and pycor = zona-peix-pycor] [set pcolor turquoise]
 end
 
 
@@ -131,7 +140,7 @@ end
 to setup-carn
 
    set zona-carn-pxcor zona-peix-pxcor + margin-between-zones
-
+   set zona-carn-pycor -5
   ask patches with [zona-carn-pxcor = pxcor ] [set  pcolor white - 2]
    ask n-of num-treb-carn patches with [(zona-carn-pxcor = pxcor) ] [
     sprout-treballadors 1 [
@@ -141,7 +150,7 @@ to setup-carn
       set size 2
     ]
   ]
-     ask patches with [( pxcor <  zona-carn-pxcor) and (pxcor > zona-peix-pxcor) and pycor = -5] [set pcolor turquoise]
+     ask patches with [( pxcor <  zona-carn-pxcor) and (pxcor > zona-peix-pxcor) and pycor = zona-carn-pycor] [set pcolor turquoise]
 end
 
 
@@ -149,7 +158,7 @@ end
 to setup-caixes
 
     set zona-caixes-pxcor zona-carn-pxcor + margin-between-zones + 5 ;; 5 extra to separate caixes from other zones
-
+    set zona-caixes-pycor -15
   ask patches with [zona-caixes-pxcor = pxcor ] [set  pcolor red - 2]
    ask n-of num-treb-caixes patches with [(zona-caixes-pxcor = pxcor) ] [
     sprout-treballadors 1 [
@@ -159,7 +168,7 @@ to setup-caixes
       set size 2
     ]
   ]
-  ask patches with [( pxcor <  zona-caixes-pxcor) and (pxcor > zona-carn-pxcor) and pycor = -15] [set pcolor turquoise]
+  ask patches with [( pxcor <  zona-caixes-pxcor) and (pxcor > zona-carn-pxcor) and pycor = zona-caixes-pycor] [set pcolor turquoise]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -282,13 +291,13 @@ persones
 HORIZONTAL
 
 BUTTON
-98
-166
-161
-199
+82
+94
+145
+127
 NIL
 go
-NIL
+T
 1
 T
 OBSERVER
