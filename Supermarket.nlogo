@@ -1,34 +1,43 @@
 globals [
   zona-peix-pxcor
+  queue-peix
   zona-forn-pxcor
+  queue-forn
   zona-carn-pxcor
+  queue-carn
   zona-fruita-pxcor
+  queue-fruita
   zona-prestatges-pxcor
   zona-caixes-pxcor
+  queue-caixes
   ;;Graphics
   starting-point
   margin-between-zones
   contador
-
-  zona-peix-pycor
-  zona-forn-pycor
-  zona-carn-pycor
-  zona-fruita-pycor
-  zona-prestatges-pycor
-  zona-caixes-pycor
-
 ]
 
 breed [treballadors treballador] ;;Treballadors. Són un actius
 breed [clients client]        ;;Clients, passius
 
-treballadors-own [servingTime]
-clients-own [visitedCarn  visitedPeix visitedPa visitedFruita visitedPrestatges]
+treballadors-own [
+  serving-time
+  serving-cd
+  serving-client
+]
+
+clients-own [
+  visitedCarn
+  visitedPeix
+  visitedPa
+  visitedFruita
+  visitedPrestatges
+]
+
 to setup
- clear-all
- set margin-between-zones 5
- set starting-point -13
- set contador 0
+  clear-all
+  set margin-between-zones 5
+  set starting-point -13
+  set contador 0
   setup-prestatges
   setup-fruita
   setup-forn
@@ -36,6 +45,8 @@ to setup
   setup-carn
   setup-caixes
   setup-entrada
+  reset-timer
+  reset-ticks
 end
 
 to setup-entrada
@@ -60,34 +71,25 @@ end
 
 ;; ------------------- PRESTATGERIES -------------------
 to setup-prestatges
-
   set zona-prestatges-pxcor starting-point
-  set zona-prestatges-pycor 0
   ask patches with [zona-prestatges-pxcor = pxcor ] [set  pcolor yellow - 2]
   ask n-of 1 patches with [(zona-prestatges-pxcor = pxcor) ] [
     sprout-treballadors 1 [
-      set label "(Prestatges)"
+      set label "prestatges"
       set color white
       set shape "person"
       set size 0
-      setxy zona-prestatges-pxcor zona-prestatges-pycor
+      setxy zona-prestatges-pxcor 0
       ask patches with [pycor = [pycor] of myself]  [if (pxcor < zona-prestatges-pxcor) [set pcolor turquoise]]
     ]
   ]
 end
 
-
-to go
-  create-user
-  print contador
-end
-
-
 ;; ------------------- FRUITA  -------------------
 to setup-fruita
 
     set zona-fruita-pxcor zona-prestatges-pxcor + margin-between-zones
-    set zona-fruita-pycor 10
+
   ask patches with [zona-fruita-pxcor = pxcor ] [set  pcolor blue - 2]
    ask n-of num-treb-fruita patches with [(zona-fruita-pxcor = pxcor) ] [
     sprout-treballadors 1 [
@@ -97,7 +99,7 @@ to setup-fruita
       set size 2
     ]
   ]
-   ask patches with [( pxcor <  zona-fruita-pxcor) and (pxcor > zona-prestatges-pxcor) and pycor = zona-fruita-pycor] [set pcolor turquoise]
+   ask patches with [( pxcor <  zona-fruita-pxcor) and (pxcor > zona-prestatges-pxcor) and pycor = 10] [set pcolor turquoise]
 end
 
 
@@ -105,7 +107,7 @@ end
 to setup-forn
 
     set zona-forn-pxcor zona-fruita-pxcor + margin-between-zones
-    set zona-forn-pycor 5
+
   ask patches with [zona-forn-pxcor = pxcor ] [set  pcolor green - 2]
    ask n-of num-treb-forn patches with [(zona-forn-pxcor = pxcor) ] [
     sprout-treballadors 1 [
@@ -115,14 +117,14 @@ to setup-forn
       set size 2
     ]
   ]
-      ask patches with [( pxcor <  zona-forn-pxcor) and (pxcor > zona-fruita-pxcor) and pycor = zona-forn-pycor] [set pcolor turquoise]
+      ask patches with [( pxcor <  zona-forn-pxcor) and (pxcor > zona-fruita-pxcor) and pycor = 5] [set pcolor turquoise]
 end
 
 ;; ------------------- PEIX  -------------------
 to setup-peix
 
     set zona-peix-pxcor zona-forn-pxcor + margin-between-zones
-    set zona-peix-pycor 0
+
   ask patches with [zona-peix-pxcor = pxcor ] [set  pcolor red - 2]
    ask n-of num-treb-peix patches with [(zona-peix-pxcor = pxcor) ] [
     sprout-treballadors 1 [
@@ -132,7 +134,7 @@ to setup-peix
       set size 2
     ]
   ]
-  ask patches with [( pxcor <  zona-peix-pxcor) and (pxcor > zona-forn-pxcor) and pycor = zona-peix-pycor] [set pcolor turquoise]
+  ask patches with [( pxcor <  zona-peix-pxcor) and (pxcor > zona-forn-pxcor) and pycor = 0] [set pcolor turquoise]
 end
 
 
@@ -140,7 +142,7 @@ end
 to setup-carn
 
    set zona-carn-pxcor zona-peix-pxcor + margin-between-zones
-   set zona-carn-pycor -5
+
   ask patches with [zona-carn-pxcor = pxcor ] [set  pcolor white - 2]
    ask n-of num-treb-carn patches with [(zona-carn-pxcor = pxcor) ] [
     sprout-treballadors 1 [
@@ -150,7 +152,7 @@ to setup-carn
       set size 2
     ]
   ]
-     ask patches with [( pxcor <  zona-carn-pxcor) and (pxcor > zona-peix-pxcor) and pycor = zona-carn-pycor] [set pcolor turquoise]
+     ask patches with [( pxcor <  zona-carn-pxcor) and (pxcor > zona-peix-pxcor) and pycor = -5] [set pcolor turquoise]
 end
 
 
@@ -158,7 +160,7 @@ end
 to setup-caixes
 
     set zona-caixes-pxcor zona-carn-pxcor + margin-between-zones + 5 ;; 5 extra to separate caixes from other zones
-    set zona-caixes-pycor -15
+
   ask patches with [zona-caixes-pxcor = pxcor ] [set  pcolor red - 2]
    ask n-of num-treb-caixes patches with [(zona-caixes-pxcor = pxcor) ] [
     sprout-treballadors 1 [
@@ -168,7 +170,87 @@ to setup-caixes
       set size 2
     ]
   ]
-  ask patches with [( pxcor <  zona-caixes-pxcor) and (pxcor > zona-carn-pxcor) and pycor = zona-caixes-pycor] [set pcolor turquoise]
+  ask patches with [( pxcor <  zona-caixes-pxcor) and (pxcor > zona-carn-pxcor) and pycor = -15] [set pcolor turquoise]
+end
+
+
+to go
+  create-user
+  print contador
+  ask treballadors
+  [
+    set serving-cd = serving-cd - 1
+    if serving-cd = 0
+    [
+      set serving-cd serving-time
+      if client serving-client != nobody
+      [
+        move-client serving-client
+      ]
+
+      ;; prestatgeries??
+      ifelse label = "fruita"
+      [
+        if length queue-fruita > 0
+        [
+          set serving-client first queue-fruita
+          set queue-fruita bf queue-fruita
+          move-queue queue-fruita
+        ]
+      ]
+      [
+        ifelse label = "forn"
+        [
+          if length queue-forn > 0
+          [
+            set serving-client first queue-forn
+            set queue-forn bf queue-forn
+            move-queue queue-forn
+          ]
+        ]
+        [
+          ifelse label = "peix"
+          [
+            if length queue-peix > 0
+            [
+              set serving-client first queue-peix
+              set queue-forn bf queue-peix
+              move-queue queue-peix
+            ]
+          ]
+          [
+            ifelse label = "carn"
+            [
+              if length queue-carn > 0
+              [
+                set serving-client first queue-carn
+                set queue-forn bf queue-carn
+                move-queue queue-carn
+              ]
+            ]
+            [
+              if label = "caixes"
+              [
+                if length queue-caixes > 0
+                [
+                  set serving-client first queue-caixes
+                  set queue-forn bf queue-caixes
+                  move-queue queue-caixes
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
+  ]
+end
+
+to move-client [client]
+
+end
+
+to move-queue [queue]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -291,13 +373,13 @@ persones
 HORIZONTAL
 
 BUTTON
-82
-94
-145
-127
+98
+166
+161
+199
 NIL
 go
-T
+NIL
 1
 T
 OBSERVER
