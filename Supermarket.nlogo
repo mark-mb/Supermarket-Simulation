@@ -32,7 +32,6 @@ globals [
   starting-point
   margin-between-zones
   client-cd
-  client-time
   cur-turt
   size-queue
 ]
@@ -42,6 +41,7 @@ breed [clients client]           ;;Clients, passius
 
 treballadors-own [
   serving-time
+  serving-time-margin
   serving-cd
   serving-client
 ]
@@ -61,11 +61,8 @@ to setup
   clear-all
   set margin-between-zones 5
   set starting-point (min-pxcor + margin-between-zones - 1)
-  set client-time 10 ;; Slider
-  set client-cd client-time
+  set client-cd temps-entrada + random marge-temps-entrada
   set size-queue margin-between-zones
-  ;; TODO: per a cada zona, per a cada treballador, fer un set de serving-time i de serving-cd
-  ;; TODO (a la v2): en lloc de serving-time, serving-time-max i serving-time-min, per a que sigui una distribucio
   setup-prestatges
   setup-fruita
   setup-forn
@@ -80,45 +77,45 @@ end
 to setup-prestatges
   set queue-prestatges-pxcor starting-point
   set queue-prestatges-pycor 0
-  setup-zona "prestages" 0 0 (yellow - 2) 0
+  setup-zona "prestages" 0 (yellow - 2) 0 temps-prestatges marge-temps-prestatges
 end
 
 to setup-fruita
   set queue-fruita []
   set queue-fruita-pxcor starting-point
   set queue-fruita-pycor 10
-  setup-zona "fruita" num-treb-fruita 10 (blue - 2) 10
+  setup-zona "fruita" num-treb-fruita (blue - 2) 10 temps-fruita marge-temps-fruita
 end
 
 to setup-forn
   set queue-forn []
   set queue-forn-pxcor starting-point
   set queue-forn-pycor 5
-  setup-zona "forn" num-treb-forn 10 green - 2 5
+  setup-zona "forn" num-treb-forn green - 2 5 temps-forn marge-temps-forn
 end
 
 to setup-peix
   set queue-peix []
   set queue-peix-pxcor starting-point
   set queue-peix-pycor 0
-  setup-zona "peix" num-treb-peix 10 red - 2 0
+  setup-zona "peix" num-treb-peix red - 2 0 temps-peix marge-temps-peix
 end
 
 to setup-carn
   set queue-carn []
   set queue-carn-pxcor starting-point
   set queue-carn-pycor -5
-  setup-zona "carn" num-treb-carn 10 white - 2 -5
+  setup-zona "carn" num-treb-carn white - 2 -5 temps-carn marge-temps-carn
 end
 
 to setup-caixes
   set queue-caixes []
   set queue-caixes-pxcor starting-point
   set queue-caixes-pycor -15
-  setup-zona "caixes" num-treb-caixes 10 red - 2 -15
+  setup-zona "caixes" num-treb-caixes red - 2 -15 temps-caixes marge-temps-caixes
 end
 
-to setup-zona [name n t col ycoord]
+to setup-zona [name n col ycoord t t-margin]
   let zona-pxcor starting-point
   set starting-point starting-point + margin-between-zones
 
@@ -134,7 +131,8 @@ to setup-zona [name n t col ycoord]
       set size 2
       setxy zona-pxcor pycor
       set serving-time t
-      set serving-cd t
+      set serving-time-margin t-margin
+      set serving-cd t + random t-margin
       set serving-client -1
     ]
   ]
@@ -146,7 +144,7 @@ to go
   if client-cd = 0
   [
     client-new
-    set client-cd client-time
+    set client-cd temps-entrada + random marge-temps-entrada
   ]
 
   ask clients with [prestatges-cd > 0]
@@ -163,7 +161,7 @@ to go
     set serving-cd (serving-cd - 1)
     if serving-cd = 0
     [
-      set serving-cd serving-time
+      set serving-cd serving-time + random serving-time-margin
       if client serving-client != nobody
       [
         move-client serving-client
@@ -249,10 +247,9 @@ to move-client [clt]
   print "Moving client"
   ask client clt
   [
-    ;; TODO (a la v2): Fer un algorisme de selecció de cua
     ifelse not visited-prestatges
     [
-      set prestatges-cd 10 ;; TODO: Variable o slider o min/max per al temps de prestages
+      set prestatges-cd temps-prestatges + random marge-temps-prestatges
       set visited-prestatges true
       add-to-queue clt queue-prestatges-pxcor queue-prestatges-pycor
     ]
@@ -333,10 +330,10 @@ to move-queue [pxfirst pyfirst]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-318
-15
-783
-475
+99
+10
+564
+470
 17
 16
 13.0
@@ -377,10 +374,10 @@ NIL
 1
 
 SLIDER
-1052
-27
-1284
-60
+1097
+91
+1329
+124
 num-treb-carn
 num-treb-carn
 1
@@ -392,60 +389,60 @@ persones
 HORIZONTAL
 
 SLIDER
-1056
-80
-1284
-113
-num-treb-fruita
-num-treb-fruita
-1
-10
-3
-1
-1
-persones
-HORIZONTAL
-
-SLIDER
-1058
-132
-1277
-165
-num-treb-peix
-num-treb-peix
-1
-10
-1
-1
-1
-persones
-HORIZONTAL
-
-SLIDER
-1053
-177
-1281
-210
-num-treb-forn
-num-treb-forn
-1
-10
-3
-1
-1
-persones
-HORIZONTAL
-
-SLIDER
-1058
-223
-1293
+1101
 256
+1333
+289
+num-treb-fruita
+num-treb-fruita
+1
+10
+3
+1
+1
+persones
+HORIZONTAL
+
+SLIDER
+1350
+91
+1584
+124
+num-treb-peix
+num-treb-peix
+1
+10
+1
+1
+1
+persones
+HORIZONTAL
+
+SLIDER
+1349
+255
+1581
+288
+num-treb-forn
+num-treb-forn
+1
+10
+1
+1
+1
+persones
+HORIZONTAL
+
+SLIDER
+1097
+424
+1332
+457
 num-treb-caixes
 num-treb-caixes
 1
 10
-1
+4
 1
 1
 persones
@@ -484,6 +481,298 @@ NIL
 NIL
 NIL
 1
+
+TEXTBOX
+1103
+63
+1253
+81
+Carnisseria
+12
+0.0
+1
+
+SLIDER
+1099
+134
+1328
+167
+temps-carn
+temps-carn
+0
+500
+350
+10
+1
+sec
+HORIZONTAL
+
+SLIDER
+1099
+178
+1327
+211
+marge-temps-carn
+marge-temps-carn
+0
+100
+50
+1
+1
+sec
+HORIZONTAL
+
+TEXTBOX
+1374
+69
+1524
+87
+Peixateria
+12
+0.0
+1
+
+SLIDER
+1350
+134
+1584
+167
+temps-peix
+temps-peix
+0
+500
+200
+10
+1
+sec
+HORIZONTAL
+
+SLIDER
+1352
+181
+1582
+214
+marge-temps-peix
+marge-temps-peix
+0
+100
+50
+1
+1
+NIL
+HORIZONTAL
+
+TEXTBOX
+1105
+229
+1255
+247
+Fruiteria
+12
+0.0
+1
+
+SLIDER
+1099
+302
+1330
+335
+temps-fruita
+temps-fruita
+0
+500
+250
+10
+1
+sec
+HORIZONTAL
+
+SLIDER
+1097
+349
+1333
+382
+marge-temps-fruita
+marge-temps-fruita
+0
+100
+50
+1
+1
+NIL
+HORIZONTAL
+
+TEXTBOX
+1359
+226
+1509
+244
+Forn
+12
+0.0
+1
+
+SLIDER
+1346
+301
+1581
+334
+temps-forn
+temps-forn
+0
+500
+150
+10
+1
+sec
+HORIZONTAL
+
+SLIDER
+1350
+349
+1582
+382
+marge-temps-forn
+marge-temps-forn
+0
+100
+25
+1
+1
+sec
+HORIZONTAL
+
+TEXTBOX
+1100
+397
+1250
+415
+Caixes
+12
+0.0
+1
+
+SLIDER
+1096
+467
+1332
+500
+temps-caixes
+temps-caixes
+0
+500
+250
+10
+1
+sec
+HORIZONTAL
+
+SLIDER
+1098
+514
+1336
+547
+marge-temps-caixes
+marge-temps-caixes
+0
+100
+50
+1
+1
+sec
+HORIZONTAL
+
+TEXTBOX
+1361
+397
+1511
+415
+Prestatgeries
+12
+0.0
+1
+
+SLIDER
+1350
+426
+1566
+459
+temps-prestatges
+temps-prestatges
+0
+500
+300
+10
+1
+sec
+HORIZONTAL
+
+SLIDER
+1352
+470
+1570
+503
+marge-temps-prestatges
+marge-temps-prestatges
+0
+100
+100
+1
+1
+sec
+HORIZONTAL
+
+PLOT
+590
+22
+1081
+292
+Cues
+Temps
+Gent
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"Carnisseria" 1.0 0 -16777216 true "" "plot length queue-carn"
+"Peixateria" 1.0 0 -2674135 true "" "plot length queue-peix"
+"Fruiteria" 1.0 0 -955883 true "" "plot length queue-fruita"
+"Forn" 1.0 0 -10899396 true "" "plot length queue-forn"
+"Caixa" 1.0 0 -13345367 true "" "plot length queue-caixes"
+
+SLIDER
+1099
+10
+1324
+43
+temps-entrada
+temps-entrada
+0
+1000
+390
+10
+1
+sec
+HORIZONTAL
+
+SLIDER
+1346
+10
+1590
+43
+marge-temps-entrada
+marge-temps-entrada
+0
+100
+100
+1
+1
+sec
+HORIZONTAL
 
 @#$#@#$#@
 ## QUÈ ÉS?
