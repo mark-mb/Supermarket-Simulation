@@ -1,34 +1,40 @@
 globals [
-  zona-peix-pxcor
-  queue-peix
-  peix-offset
-  zona-forn-pxcor
-  queue-forn
-  forn-offset
-  zona-carn-pxcor
-  queue-carn
-  carn-offset
-  zona-fruita-pxcor
-  queue-fruita
-  fruita-offset
-  zona-prestatges-pxcor
-  prestatges-offset
+  ;; prestatges
+  queue-prestatges-pxcor
+  queue-prestatges-pycor
 
-  zona-caixes-pxcor
+  ;; peix
+  queue-peix
+  queue-peix-pxcor
+  queue-peix-pycor
+
+  ;; forn
+  queue-forn
+  queue-forn-pxcor
+  queue-forn-pycor
+
+  ;; carn
+  queue-carn
+  queue-carn-pxcor
+  queue-carn-pycor
+
+  ;; fruita
+  queue-fruita
+  queue-fruita-pxcor
+  queue-fruita-pycor
+
+  ;; caixes
   queue-caixes
-  caixes-offset
-  ;;Graphics
+  queue-caixes-pxcor
+  queue-caixes-pycor
+
+  ;; Other
   starting-point
   margin-between-zones
-  contador
-  cur_turt
-
-  pycor-fruita
-  pycor-peix
-  pycor-carn
-  pycor-forn
-  pycor-prestatges
-  pycor-caixes
+  client-cd
+  client-time
+  cur-turt
+  size-queue
 ]
 
 breed [treballadors treballador] ;;Treballadors. Són un actius
@@ -50,11 +56,14 @@ clients-own [
   prestatges-cd
 ]
 
+;; Setup
 to setup
   clear-all
   set margin-between-zones 5
-  set starting-point -13
-  set contador 0
+  set starting-point (min-pxcor + margin-between-zones - 1)
+  set client-time 10 ;; Slider
+  set client-cd client-time
+  set size-queue margin-between-zones
   ;; TODO: per a cada zona, per a cada treballador, fer un set de serving-time i de serving-cd
   ;; TODO (a la v2): en lloc de serving-time, serving-time-max i serving-time-min, per a que sigui una distribucio
   setup-prestatges
@@ -68,215 +77,87 @@ to setup
   reset-ticks
 end
 
-to add-carn
-  ;; TODO Cridar a move-client amb el id d'aquest (who)
-
-  if carn-offset < 5 and random 2 < 1 [ask n-of 1 patches with [( pxcor =  zona-carn-pxcor - carn-offset) and (pxcor > zona-peix-pxcor) and pycor = pycor-carn][sprout-clients 1 [
-      set color black
-      set shape "person"
-      set size 1
-      set carn-offset carn-offset + 1
-      set visited-carn false
-      set visited-peix false
-      set visited-forn false
-      set visited-fruita false
-      set visited-prestatges false
-      set visited-caixes false
-     move-client who
-  ]]
-  set contador contador + 1 ]
-end
-
-to add-peix
-  ;; TODO Cridar a move-client amb el id d'aquest (who)
-
-  if peix-offset < 5 and random 2 < 1 [ask n-of 1 patches with [( pxcor =  zona-peix-pxcor - peix-offset) and (pxcor > zona-forn-pxcor) and pycor = pycor-peix][sprout-clients 1 [
-      set color black
-      set shape "person"
-      set size 1
-      set peix-offset peix-offset + 1
-      set visited-carn false
-      set visited-peix false
-      set visited-forn false
-      set visited-fruita false
-      set visited-prestatges false
-      set visited-caixes false
-     move-client who
-  ]]
-  set contador contador + 1 ]
-end
-
-to add-forn
-  ;; TODO Cridar a move-client amb el id d'aquest (who)
-
-  if forn-offset < 5 and random 2 < 1 [ask n-of 1 patches with [( pxcor =  zona-forn-pxcor - forn-offset) and (pxcor > zona-fruita-pxcor) and pycor = pycor-forn][sprout-clients 1 [
-      set color black
-      set shape "person"
-      set size 1
-      set forn-offset forn-offset + 1
-      set visited-carn false
-      set visited-peix false
-      set visited-forn false
-      set visited-fruita false
-      set visited-prestatges false
-      set visited-caixes false
-     move-client who
-  ]]
-  set contador contador + 1 ]
-end
-
-
-to add-fruita
-  ;; TODO Cridar a move-client amb el id d'aquest (who)
-
-  if fruita-offset < 5 and random 2 < 1 [ask n-of 1 patches with [( pxcor =  zona-fruita-pxcor - fruita-offset) and (pxcor > zona-prestatges-pxcor) and pycor = pycor-fruita][sprout-clients 1 [
-      set color black
-      set shape "person"
-      set size 1
-      set fruita-offset fruita-offset + 1
-      set visited-carn false
-      set visited-peix false
-      set visited-forn false
-      set visited-fruita false
-      set visited-prestatges false
-      set visited-caixes false
-     move-client who
-  ]]
-  set contador contador + 1 ]
-end
-
-
-
-to add-prestatges
-  ;; TODO Cridar a move-client amb el id d'aquest (who)
-
-  if prestatges-offset < 5 and random 2 < 1 [ask n-of 1 patches with [( pxcor =  zona-prestatges-pxcor - prestatges-offset) and pycor = pycor-prestatges][sprout-clients 1 [
-      set color black
-      set shape "person"
-      set size 1
-      set prestatges-offset prestatges-offset + 1
-      set visited-carn false
-      set visited-peix false
-      set visited-forn false
-      set visited-fruita false
-      set visited-prestatges false
-      set visited-caixes false
-     move-client who
-  ]]
-  set contador contador + 1 ]
-end
-
-
-;; ------------------- PRESTATGERIES -------------------
 to setup-prestatges
-  set zona-prestatges-pxcor starting-point
-  set pycor-prestatges 0
-  ask patches with [zona-prestatges-pxcor = pxcor ] [set  pcolor yellow - 2]
-  ask n-of 1 patches with [(zona-prestatges-pxcor = pxcor) ] [
-    sprout-treballadors 1 [
-      set label "prestatges"
-      set color white
-      set shape "person"
-      set size 0
-      setxy zona-prestatges-pxcor pycor-prestatges
-      ask patches with [pycor = [pycor] of myself]  [if (pxcor < zona-prestatges-pxcor) [set pcolor turquoise]]
-    ]
-  ]
+  set queue-prestatges-pxcor starting-point
+  set queue-prestatges-pycor 0
+  setup-zona "prestages" 0 0 (yellow - 2) 0
 end
 
-;; ------------------- FRUITA  -------------------
 to setup-fruita
-
-    set zona-fruita-pxcor zona-prestatges-pxcor + margin-between-zones
-    set pycor-fruita 10
-  ask patches with [zona-fruita-pxcor = pxcor ] [set  pcolor blue - 2]
-   ask n-of num-treb-fruita patches with [(zona-fruita-pxcor = pxcor) ] [
-    sprout-treballadors 1 [
-      set label "fruiter"
-      set color white
-      set shape "person"
-      set size 2
-    ]
-  ]
-   ask patches with [( pxcor <  zona-fruita-pxcor) and (pxcor > zona-prestatges-pxcor) and pycor = pycor-fruita] [set pcolor turquoise]
+  set queue-fruita []
+  set queue-fruita-pxcor starting-point
+  set queue-fruita-pycor 10
+  setup-zona "fruita" num-treb-fruita 10 (blue - 2) 10
 end
 
-
-;; ------------------- FORN  -------------------
 to setup-forn
-
-    set zona-forn-pxcor zona-fruita-pxcor + margin-between-zones
-    set pycor-forn 5
-  ask patches with [zona-forn-pxcor = pxcor ] [set  pcolor green - 2]
-   ask n-of num-treb-forn patches with [(zona-forn-pxcor = pxcor) ] [
-    sprout-treballadors 1 [
-      set label "forner"
-      set color yellow
-      set shape "person"
-      set size 2
-    ]
-  ]
-      ask patches with [( pxcor <  zona-forn-pxcor) and (pxcor > zona-fruita-pxcor) and pycor = pycor-forn] [set pcolor turquoise]
+  set queue-forn []
+  set queue-forn-pxcor starting-point
+  set queue-forn-pycor 5
+  setup-zona "forn" num-treb-forn 10 green - 2 5
 end
 
-;; ------------------- PEIX  -------------------
 to setup-peix
-
-    set zona-peix-pxcor zona-forn-pxcor + margin-between-zones
-    set pycor-peix 0
-  ask patches with [zona-peix-pxcor = pxcor ] [set  pcolor red - 2]
-   ask n-of num-treb-peix patches with [(zona-peix-pxcor = pxcor) ] [
-    sprout-treballadors 1 [
-      set label "peixater"
-      set color blue
-      set shape "person"
-      set size 2
-    ]
-  ]
-  ask patches with [( pxcor <  zona-peix-pxcor) and (pxcor > zona-forn-pxcor) and pycor = pycor-peix] [set pcolor turquoise]
+  set queue-peix []
+  set queue-peix-pxcor starting-point
+  set queue-peix-pycor 0
+  setup-zona "peix" num-treb-peix 10 red - 2 0
 end
 
-
-;; ------------------- CARN  -------------------
 to setup-carn
-
-   set zona-carn-pxcor zona-peix-pxcor + margin-between-zones
-   set pycor-carn -5
-   set carn-offset 0
-  ask patches with [zona-carn-pxcor = pxcor ] [set  pcolor white - 2]
-   ask n-of num-treb-carn patches with [(zona-carn-pxcor = pxcor) ] [
-    sprout-treballadors 1 [
-      set label "carnisser"
-      set color red
-      set shape "person"
-      set size 2
-    ]
-  ]
-     ask patches with [( pxcor <  zona-carn-pxcor) and (pxcor > zona-peix-pxcor) and pycor = pycor-carn] [set pcolor turquoise]
+  set queue-carn []
+  set queue-carn-pxcor starting-point
+  set queue-carn-pycor -5
+  setup-zona "carn" num-treb-carn 10 white - 2 -5
 end
 
-
-;; ------------------- CAIXES  -------------------
 to setup-caixes
+  set queue-caixes []
+  set queue-caixes-pxcor starting-point
+  set queue-caixes-pycor -15
+  setup-zona "caixes" num-treb-caixes 10 red - 2 -15
+end
 
-    set zona-caixes-pxcor zona-carn-pxcor + margin-between-zones + 5 ;; 5 extra to separate caixes from other zones
-    set pycor-caixes -15
-  ask patches with [zona-caixes-pxcor = pxcor ] [set  pcolor red - 2]
-   ask n-of num-treb-caixes patches with [(zona-caixes-pxcor = pxcor) ] [
+to setup-zona [name n t col ycoord]
+  let zona-pxcor starting-point
+  set starting-point starting-point + margin-between-zones
+
+  ask patches with [zona-pxcor = pxcor] [set pcolor col]
+  ask patches with [pycor = ycoord and pxcor < zona-pxcor and pxcor > (zona-pxcor - size-queue)] [set pcolor turquoise]
+
+  ask n-of n patches with [zona-pxcor = pxcor]
+  [
     sprout-treballadors 1 [
-      set label "caixer"
+      set label name
       set color white
       set shape "person"
       set size 2
+      setxy zona-pxcor pycor
+      set serving-time t
+      set serving-cd t
+      set serving-client -1
     ]
   ]
-  ask patches with [( pxcor <  zona-caixes-pxcor) and (pxcor > zona-carn-pxcor) and pycor = pycor-caixes] [set pcolor turquoise]
 end
 
 ;; GO
 to go
-  add-carn
-  print contador
+  set client-cd (client-cd - 1)
+  if client-cd = 0
+  [
+    client-new
+    set client-cd client-time
+  ]
+
+  ask clients with [prestatges-cd != 0]
+  [
+    set prestatges-cd (prestatges-cd - 1)
+    if prestatges-cd = 0
+    [
+      move-client who
+    ]
+  ]
+
   ask treballadors
   [
     set serving-cd (serving-cd - 1)
@@ -351,45 +232,68 @@ to go
   tick
 end
 
+to client-new
+  print "New client arrived"
+  create-clients 1 [
+      set color black
+      set shape "person"
+      set size 1
+      set visited-carn false
+      set visited-peix false
+      set visited-forn false
+      set visited-fruita false
+      set visited-prestatges false
+      set visited-caixes false
+      set prestatges-cd 0
+      move-client who
+  ]
+end
+
 to move-client [clt]
+  print "Moving client"
   ask client clt
   [
-    ;; TODO: Actualitzar grafic del client a la cua que toqui
     ;; TODO (a la v2): Fer un algorisme de selecció de cua
     ifelse not visited-prestatges
     [
-      set prestatges-cd 50 ;; TODO: Variable o slider o min/max per al temps de prestages
+      set prestatges-cd 20 ;; TODO: Variable o slider o min/max per al temps de prestages
       set visited-prestatges true
+      add-to-queue clt queue-prestatges-pxcor queue-prestatges-pycor
     ]
     [
       ifelse not visited-fruita
       [
         set queue-fruita lput clt queue-fruita
         set visited-fruita true
+        add-to-queue clt queue-fruita-pxcor queue-fruita-pycor
       ]
       [
         ifelse not visited-forn
         [
           set queue-forn lput clt queue-forn
           set visited-forn true
+          add-to-queue clt queue-forn-pxcor queue-forn-pycor
         ]
         [
           ifelse not visited-carn
           [
             set queue-carn lput clt queue-carn
             set visited-carn true
+            add-to-queue clt queue-carn-pxcor queue-carn-pycor
           ]
           [
             ifelse not visited-peix
             [
               set queue-peix lput clt queue-peix
               set visited-peix true
+              add-to-queue clt queue-peix-pxcor queue-peix-pycor
             ]
             [
               ifelse not visited-caixes
               [
                 set queue-caixes lput clt queue-caixes
                 set visited-caixes true
+                add-to-queue clt queue-caixes-pxcor queue-caixes-pycor
               ]
               [
                 die
@@ -402,6 +306,24 @@ to move-client [clt]
   ]
 end
 
+to add-to-queue [clt pxfirst pyfirst]
+  print pxfirst
+  print pyfirst
+  ask patches with [pycor = pyfirst and pxcor < pxfirst and pxcor > pxfirst - size-queue]
+  [
+    print pycor
+    print pxcor
+    if (not any? (clients-on myself))
+    [
+      ask client clt [
+        print "Hi"
+        setxy pxcor pycor
+      ]
+      stop
+    ]
+  ]
+end
+
 to move-queue [queue]
   ;; TODO: avancar graficament els elements de la cua queue
 
@@ -410,9 +332,9 @@ end
 GRAPHICS-WINDOW
 211
 42
-806
+676
 502
-22
+17
 16
 13.0
 1
@@ -424,8 +346,8 @@ GRAPHICS-WINDOW
 1
 1
 1
--22
-22
+-17
+17
 -16
 16
 0
