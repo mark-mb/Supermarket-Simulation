@@ -486,16 +486,29 @@ NIL
 1
 
 @#$#@#$#@
-## WHAT IS IT?
+## QUÈ ÉS?
 
 Aquest model tracta de simular el comportament intern d'un supermercat.
-És a dir, com són atesos els clients a cada zona del super en funció del nombre de dependents a cada una d'elles.
+
+És a dir, com són atesos els clients a cada zona del super en funció del nombre de dependents a cada una d'elles. El nostre supermercat consta de 6 zones: carnisseria, peixateria, fruiteria, forn, prestatges i caixes.  En totes elles hi ha dependents menys a la zona de prestatges que els clients s’autoserveixen.
 
 
-## HOW TO USE IT
-Primer s'ha de fer click a Setup per a inicialitzar el model.
-Després al Go per a fer-lo funcionar.
-Amb el botó Step es pot fer córrer el model un tick.
+## UTILITZACIÓ
+Primer s'ha de fer click a SETUP per tal d’inicialitzar el model.
+Després a GO per a fer-lo funcionar.
+Amb el botó STEP es pot fer córrer el model un tick i veure l’execució pas a pas. Això permet analitzar millor el comportament del model.
+
+Per a cada zona, hi ha un slider que determina el número de treballadors que poden atendre clients. A totes elles hi ha d’haver almenys un treballador (menys a prestatgeries, on cada client es serveix a si mateix i no depèn de ser atès), i un màxim de 10. Tot i això, el màxim és arbitrari i es pot augmentar sense cap problema.
+
+## IMPLEMENTACIÓ
+A grans trets, cada zona disposa d’una cua interna on es guarda el número de clients que estan fent cua per a ser atesos.
+Un cop es pot moure de zona, els clients comproven quines zones els falten per a visitar i, quan troben una que els falta, hi van. Un cop han acabat passen per caixes.
+
+S’ha decidit separar la representació gràfica del model amb la representació funcional d’aquest per a tal de facilitar la implementació. Pel que fa a la represntació gràfica, les cues estan represntades per a un espai entre dues zones de tal manera que la cua és de la zona de la dreta. En aquesta zona s’hi pintarà gent quan l’algorisme decideixi enviar-hi clients i s’esborraran quan aquests siguin atesos.
+
+
+## REPRESENTACIÓ
+S’ha especificat cada zona com una gran columna, pretenent imitar un mostrador. En inicialitzar el model, a cada mostrador de cada zona es posicionen tants treballadors com s’hagin especificat als sliders.
 @#$#@#$#@
 default
 true
