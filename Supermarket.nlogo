@@ -62,8 +62,8 @@ to setup
 end
 
 to setup-entrada
-  ask n-of 1 patches [ sprout-clients 1 [
-      set color blue
+  ask n-of 1 patches with [( pxcor <  zona-caixes-pxcor) and (pxcor > zona-carn-pxcor) and pycor = pycor-caixes][ sprout-clients 1 [
+      set color black
       set shape "person"
       set size 1]]
 end
@@ -71,8 +71,8 @@ end
 to create-user
   ;; TODO Cridar a move-client amb el id d'aquest (who)
 
-  if random 2 < 1 [ask n-of 1 patches [ sprout-clients 1 [
-      set color blue
+  if random 2 < 1 [ask n-of 1 patches with [( pxcor <  zona-caixes-pxcor) and (pxcor > zona-carn-pxcor) and pycor = pycor-caixes][sprout-clients 1 [
+      set color black
       set shape "person"
       set size 1
       set visited-carn false
