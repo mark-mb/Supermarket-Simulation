@@ -5,6 +5,7 @@ globals [
   queue-forn
   zona-carn-pxcor
   queue-carn
+  carn-offset
   zona-fruita-pxcor
   queue-fruita
   zona-prestatges-pxcor
@@ -56,25 +57,19 @@ to setup
   setup-peix
   setup-carn
   setup-caixes
-  setup-entrada
+
   reset-timer
   reset-ticks
-end
-
-to setup-entrada
-  ask n-of 1 patches with [( pxcor <  zona-caixes-pxcor) and (pxcor > zona-carn-pxcor) and pycor = pycor-caixes][ sprout-clients 1 [
-      set color black
-      set shape "person"
-      set size 1]]
 end
 
 to create-user
   ;; TODO Cridar a move-client amb el id d'aquest (who)
 
-  if random 2 < 1 [ask n-of 1 patches with [( pxcor <  zona-caixes-pxcor) and (pxcor > zona-carn-pxcor) and pycor = pycor-caixes][sprout-clients 1 [
+  if carn-offset < 5 and random 2 < 1 [ask n-of 1 patches with [( pxcor =  zona-carn-pxcor - carn-offset) and (pxcor > zona-peix-pxcor) and pycor = pycor-carn][sprout-clients 1 [
       set color black
       set shape "person"
       set size 1
+      set carn-offset carn-offset + 1
       set visited-carn false
       set visited-peix false
       set visited-forn false
@@ -161,6 +156,7 @@ to setup-carn
 
    set zona-carn-pxcor zona-peix-pxcor + margin-between-zones
    set pycor-carn -5
+   set carn-offset 0
   ask patches with [zona-carn-pxcor = pxcor ] [set  pcolor white - 2]
    ask n-of num-treb-carn patches with [(zona-carn-pxcor = pxcor) ] [
     sprout-treballadors 1 [
