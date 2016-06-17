@@ -14,6 +14,14 @@ globals [
   starting-point
   margin-between-zones
   contador
+  cur_turt
+
+  pycor-fruita
+  pycor-peix
+  pycor-carn
+  pycor-forn
+  pycor-prestatges
+  pycor-caixes
 ]
 
 breed [treballadors treballador] ;;Treballadors. Són un actius
@@ -62,6 +70,7 @@ end
 
 to create-user
   ;; TODO Cridar a move-client amb el id d'aquest (who)
+
   if random 2 < 1 [ask n-of 1 patches [ sprout-clients 1 [
       set color blue
       set shape "person"
@@ -72,6 +81,7 @@ to create-user
       set visited-fruita false
       set visited-prestatges false
       set visited-caixes false
+     move-client who
   ]]
   set contador contador + 1 ]
 end
@@ -79,6 +89,7 @@ end
 ;; ------------------- PRESTATGERIES -------------------
 to setup-prestatges
   set zona-prestatges-pxcor starting-point
+  set pycor-prestatges 0
   ask patches with [zona-prestatges-pxcor = pxcor ] [set  pcolor yellow - 2]
   ask n-of 1 patches with [(zona-prestatges-pxcor = pxcor) ] [
     sprout-treballadors 1 [
@@ -86,7 +97,7 @@ to setup-prestatges
       set color white
       set shape "person"
       set size 0
-      setxy zona-prestatges-pxcor 0
+      setxy zona-prestatges-pxcor pycor-prestatges
       ask patches with [pycor = [pycor] of myself]  [if (pxcor < zona-prestatges-pxcor) [set pcolor turquoise]]
     ]
   ]
@@ -96,7 +107,7 @@ end
 to setup-fruita
 
     set zona-fruita-pxcor zona-prestatges-pxcor + margin-between-zones
-
+    set pycor-fruita 10
   ask patches with [zona-fruita-pxcor = pxcor ] [set  pcolor blue - 2]
    ask n-of num-treb-fruita patches with [(zona-fruita-pxcor = pxcor) ] [
     sprout-treballadors 1 [
@@ -106,7 +117,7 @@ to setup-fruita
       set size 2
     ]
   ]
-   ask patches with [( pxcor <  zona-fruita-pxcor) and (pxcor > zona-prestatges-pxcor) and pycor = 10] [set pcolor turquoise]
+   ask patches with [( pxcor <  zona-fruita-pxcor) and (pxcor > zona-prestatges-pxcor) and pycor = pycor-fruita] [set pcolor turquoise]
 end
 
 
@@ -114,7 +125,7 @@ end
 to setup-forn
 
     set zona-forn-pxcor zona-fruita-pxcor + margin-between-zones
-
+    set pycor-forn 5
   ask patches with [zona-forn-pxcor = pxcor ] [set  pcolor green - 2]
    ask n-of num-treb-forn patches with [(zona-forn-pxcor = pxcor) ] [
     sprout-treballadors 1 [
@@ -124,14 +135,14 @@ to setup-forn
       set size 2
     ]
   ]
-      ask patches with [( pxcor <  zona-forn-pxcor) and (pxcor > zona-fruita-pxcor) and pycor = 5] [set pcolor turquoise]
+      ask patches with [( pxcor <  zona-forn-pxcor) and (pxcor > zona-fruita-pxcor) and pycor = pycor-forn] [set pcolor turquoise]
 end
 
 ;; ------------------- PEIX  -------------------
 to setup-peix
 
     set zona-peix-pxcor zona-forn-pxcor + margin-between-zones
-
+    set pycor-peix 0
   ask patches with [zona-peix-pxcor = pxcor ] [set  pcolor red - 2]
    ask n-of num-treb-peix patches with [(zona-peix-pxcor = pxcor) ] [
     sprout-treballadors 1 [
@@ -141,7 +152,7 @@ to setup-peix
       set size 2
     ]
   ]
-  ask patches with [( pxcor <  zona-peix-pxcor) and (pxcor > zona-forn-pxcor) and pycor = 0] [set pcolor turquoise]
+  ask patches with [( pxcor <  zona-peix-pxcor) and (pxcor > zona-forn-pxcor) and pycor = pycor-peix] [set pcolor turquoise]
 end
 
 
@@ -149,7 +160,7 @@ end
 to setup-carn
 
    set zona-carn-pxcor zona-peix-pxcor + margin-between-zones
-
+   set pycor-carn -5
   ask patches with [zona-carn-pxcor = pxcor ] [set  pcolor white - 2]
    ask n-of num-treb-carn patches with [(zona-carn-pxcor = pxcor) ] [
     sprout-treballadors 1 [
@@ -159,7 +170,7 @@ to setup-carn
       set size 2
     ]
   ]
-     ask patches with [( pxcor <  zona-carn-pxcor) and (pxcor > zona-peix-pxcor) and pycor = -5] [set pcolor turquoise]
+     ask patches with [( pxcor <  zona-carn-pxcor) and (pxcor > zona-peix-pxcor) and pycor = pycor-carn] [set pcolor turquoise]
 end
 
 
@@ -167,7 +178,7 @@ end
 to setup-caixes
 
     set zona-caixes-pxcor zona-carn-pxcor + margin-between-zones + 5 ;; 5 extra to separate caixes from other zones
-
+    set pycor-caixes -15
   ask patches with [zona-caixes-pxcor = pxcor ] [set  pcolor red - 2]
    ask n-of num-treb-caixes patches with [(zona-caixes-pxcor = pxcor) ] [
     sprout-treballadors 1 [
@@ -177,7 +188,7 @@ to setup-caixes
       set size 2
     ]
   ]
-  ask patches with [( pxcor <  zona-caixes-pxcor) and (pxcor > zona-carn-pxcor) and pycor = -15] [set pcolor turquoise]
+  ask patches with [( pxcor <  zona-caixes-pxcor) and (pxcor > zona-carn-pxcor) and pycor = pycor-caixes] [set pcolor turquoise]
 end
 
 ;; GO
@@ -310,6 +321,119 @@ end
 
 to move-queue [queue]
   ;; TODO: avancar graficament els elements de la cua queue
+
+  let coordY 0
+        ifelse label = "fruita"
+      [
+        if length queue-fruita > 0
+        [
+          set serving-client first queue-fruita
+          set queue-fruita bf queue-fruita
+          move-queue queue-fruita
+        ]
+      ]
+      [
+        ifelse label = "forn"
+        [
+          if length queue-forn > 0
+          [
+            set serving-client first queue-forn
+            set queue-forn bf queue-forn
+            move-queue queue-forn
+          ]
+        ]
+        [
+          ifelse label = "peix"
+          [
+            if length queue-peix > 0
+            [
+              set serving-client first queue-peix
+              set queue-peix bf queue-peix
+              move-queue queue-peix
+            ]
+          ]
+          [
+            ifelse label = "carn"
+            [
+              if length queue-carn > 0
+              [
+                set serving-client first queue-carn
+                set queue-carn bf queue-carn
+                move-queue queue-carn
+              ]
+            ]
+            [
+              ifelse label = "caixes"
+              [
+                if length queue-caixes > 0
+                [
+                  set serving-client first queue-caixes
+                  set queue-caixes bf queue-caixes
+                  move-queue queue-caixes
+                ]
+              ] [
+              ;;Prestatges
+              ]
+            ]
+          ]
+        ]
+      ]
+
+
+
+
+
+
+
+
+
+
+
+
+  ;; VIH
+
+  set cur_turt first queue
+  set queue bf queue
+  ;; Solve slightly the problem of the whole queue moving
+  let first-queue one-of turtles-on patch 0 0
+  if first-queue = nobody
+  [
+    ask turtle cur_turt [
+      set xcor 0
+    ]
+  ]
+
+  ask turtle cur_turt [
+    set color red
+    fd 2
+    rt 90
+    fd 1
+    lt 90
+  ]
+
+  ;; Move ahead
+  foreach queue [
+    ask turtle ? [
+      let ahead one-of turtles-on patch-ahead 1
+      if ahead = nobody
+      [
+        fd 1
+      ]
+    ]
+  ]
+
+ ifelse length queue > 0
+ [
+   let last-xcor [xcor] of turtle last queue
+   set xcor last-xcor + 1
+   set color blue
+ ]
+ [
+   set xcor 0
+   set color red
+ ]
+ set queue lput who queue
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -439,6 +563,23 @@ BUTTON
 NIL
 go
 T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+53
+113
+118
+146
+Step
+go
+NIL
 1
 T
 OBSERVER
