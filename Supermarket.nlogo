@@ -47,6 +47,7 @@ treballadors-own [
 ]
 
 clients-own [
+  age
   visited-carn
   visited-peix
   visited-forn
@@ -140,6 +141,11 @@ end
 
 ;; GO
 to go
+  ask clients with [label != "dead"]
+  [
+    set age age + 1
+  ]
+
   set client-cd (client-cd - 1)
   if client-cd = 0
   [
@@ -289,7 +295,8 @@ to move-client [clt]
                 add-to-queue clt queue-caixes-pxcor queue-caixes-pycor
               ]
               [
-                die
+                set label "dead"
+                set hidden? true
               ]
             ]
           ]
@@ -773,6 +780,24 @@ marge-temps-entrada
 1
 sec
 HORIZONTAL
+
+PLOT
+591
+296
+1081
+582
+Histograma temps de servei clients
+Temps
+Frequencia
+0.0
+3000.0
+0.0
+10.0
+true
+false
+"" "set-histogram-num-bars 10"
+PENS
+"age" 1.0 1 -2674135 true "" "histogram [age] of clients with [label = \"dead\"]"
 
 @#$#@#$#@
 ## QUÈ ÉS?
