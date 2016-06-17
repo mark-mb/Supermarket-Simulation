@@ -1,16 +1,22 @@
 globals [
   zona-peix-pxcor
   queue-peix
+  peix-offset
   zona-forn-pxcor
   queue-forn
+  forn-offset
   zona-carn-pxcor
   queue-carn
   carn-offset
   zona-fruita-pxcor
   queue-fruita
+  fruita-offset
   zona-prestatges-pxcor
+  prestatges-offset
+
   zona-caixes-pxcor
   queue-caixes
+  caixes-offset
   ;;Graphics
   starting-point
   margin-between-zones
@@ -62,7 +68,7 @@ to setup
   reset-ticks
 end
 
-to create-user
+to add-carn
   ;; TODO Cridar a move-client amb el id d'aquest (who)
 
   if carn-offset < 5 and random 2 < 1 [ask n-of 1 patches with [( pxcor =  zona-carn-pxcor - carn-offset) and (pxcor > zona-peix-pxcor) and pycor = pycor-carn][sprout-clients 1 [
@@ -80,6 +86,86 @@ to create-user
   ]]
   set contador contador + 1 ]
 end
+
+to add-peix
+  ;; TODO Cridar a move-client amb el id d'aquest (who)
+
+  if peix-offset < 5 and random 2 < 1 [ask n-of 1 patches with [( pxcor =  zona-peix-pxcor - peix-offset) and (pxcor > zona-forn-pxcor) and pycor = pycor-peix][sprout-clients 1 [
+      set color black
+      set shape "person"
+      set size 1
+      set peix-offset peix-offset + 1
+      set visited-carn false
+      set visited-peix false
+      set visited-forn false
+      set visited-fruita false
+      set visited-prestatges false
+      set visited-caixes false
+     move-client who
+  ]]
+  set contador contador + 1 ]
+end
+
+to add-forn
+  ;; TODO Cridar a move-client amb el id d'aquest (who)
+
+  if forn-offset < 5 and random 2 < 1 [ask n-of 1 patches with [( pxcor =  zona-forn-pxcor - forn-offset) and (pxcor > zona-fruita-pxcor) and pycor = pycor-forn][sprout-clients 1 [
+      set color black
+      set shape "person"
+      set size 1
+      set forn-offset forn-offset + 1
+      set visited-carn false
+      set visited-peix false
+      set visited-forn false
+      set visited-fruita false
+      set visited-prestatges false
+      set visited-caixes false
+     move-client who
+  ]]
+  set contador contador + 1 ]
+end
+
+
+to add-fruita
+  ;; TODO Cridar a move-client amb el id d'aquest (who)
+
+  if fruita-offset < 5 and random 2 < 1 [ask n-of 1 patches with [( pxcor =  zona-fruita-pxcor - fruita-offset) and (pxcor > zona-prestatges-pxcor) and pycor = pycor-fruita][sprout-clients 1 [
+      set color black
+      set shape "person"
+      set size 1
+      set fruita-offset fruita-offset + 1
+      set visited-carn false
+      set visited-peix false
+      set visited-forn false
+      set visited-fruita false
+      set visited-prestatges false
+      set visited-caixes false
+     move-client who
+  ]]
+  set contador contador + 1 ]
+end
+
+
+
+to add-prestatges
+  ;; TODO Cridar a move-client amb el id d'aquest (who)
+
+  if prestatges-offset < 5 and random 2 < 1 [ask n-of 1 patches with [( pxcor =  zona-prestatges-pxcor - prestatges-offset) and pycor = pycor-prestatges][sprout-clients 1 [
+      set color black
+      set shape "person"
+      set size 1
+      set prestatges-offset prestatges-offset + 1
+      set visited-carn false
+      set visited-peix false
+      set visited-forn false
+      set visited-fruita false
+      set visited-prestatges false
+      set visited-caixes false
+     move-client who
+  ]]
+  set contador contador + 1 ]
+end
+
 
 ;; ------------------- PRESTATGERIES -------------------
 to setup-prestatges
@@ -189,7 +275,7 @@ end
 
 ;; GO
 to go
-  create-user
+  add-carn
   print contador
   ask treballadors
   [
@@ -464,6 +550,23 @@ BUTTON
 146
 Step
 go
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+88
+304
+190
+337
+NIL
+add-fruita
 NIL
 1
 T
