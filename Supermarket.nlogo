@@ -266,6 +266,7 @@ to go
   [
      set prestatges-cd prestatges-cd - 1
   ]
+  tick
 end
 
 to move-client [clt]
@@ -321,118 +322,6 @@ end
 
 to move-queue [queue]
   ;; TODO: avancar graficament els elements de la cua queue
-
-  let coordY 0
-        ifelse label = "fruita"
-      [
-        if length queue-fruita > 0
-        [
-          set serving-client first queue-fruita
-          set queue-fruita bf queue-fruita
-          move-queue queue-fruita
-        ]
-      ]
-      [
-        ifelse label = "forn"
-        [
-          if length queue-forn > 0
-          [
-            set serving-client first queue-forn
-            set queue-forn bf queue-forn
-            move-queue queue-forn
-          ]
-        ]
-        [
-          ifelse label = "peix"
-          [
-            if length queue-peix > 0
-            [
-              set serving-client first queue-peix
-              set queue-peix bf queue-peix
-              move-queue queue-peix
-            ]
-          ]
-          [
-            ifelse label = "carn"
-            [
-              if length queue-carn > 0
-              [
-                set serving-client first queue-carn
-                set queue-carn bf queue-carn
-                move-queue queue-carn
-              ]
-            ]
-            [
-              ifelse label = "caixes"
-              [
-                if length queue-caixes > 0
-                [
-                  set serving-client first queue-caixes
-                  set queue-caixes bf queue-caixes
-                  move-queue queue-caixes
-                ]
-              ] [
-              ;;Prestatges
-              ]
-            ]
-          ]
-        ]
-      ]
-
-
-
-
-
-
-
-
-
-
-
-
-  ;; VIH
-
-  set cur_turt first queue
-  set queue bf queue
-  ;; Solve slightly the problem of the whole queue moving
-  let first-queue one-of turtles-on patch 0 0
-  if first-queue = nobody
-  [
-    ask turtle cur_turt [
-      set xcor 0
-    ]
-  ]
-
-  ask turtle cur_turt [
-    set color red
-    fd 2
-    rt 90
-    fd 1
-    lt 90
-  ]
-
-  ;; Move ahead
-  foreach queue [
-    ask turtle ? [
-      let ahead one-of turtles-on patch-ahead 1
-      if ahead = nobody
-      [
-        fd 1
-      ]
-    ]
-  ]
-
- ifelse length queue > 0
- [
-   let last-xcor [xcor] of turtle last queue
-   set xcor last-xcor + 1
-   set color blue
- ]
- [
-   set xcor 0
-   set color red
- ]
- set queue lput who queue
 
 end
 @#$#@#$#@
