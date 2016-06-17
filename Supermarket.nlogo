@@ -149,7 +149,7 @@ to go
     set client-cd client-time
   ]
 
-  ask clients with [prestatges-cd != 0]
+  ask clients with [prestatges-cd > 0]
   [
     set prestatges-cd (prestatges-cd - 1)
     if prestatges-cd = 0
@@ -175,7 +175,7 @@ to go
         [
           set serving-client first queue-fruita
           set queue-fruita bf queue-fruita
-          move-queue queue-fruita
+          move-queue queue-fruita-pxcor queue-fruita-pycor
         ]
       ]
       [
@@ -185,7 +185,7 @@ to go
           [
             set serving-client first queue-forn
             set queue-forn bf queue-forn
-            move-queue queue-forn
+            move-queue queue-forn-pxcor queue-forn-pycor
           ]
         ]
         [
@@ -195,7 +195,7 @@ to go
             [
               set serving-client first queue-peix
               set queue-peix bf queue-peix
-              move-queue queue-peix
+              move-queue queue-peix-pxcor queue-peix-pycor
             ]
           ]
           [
@@ -205,7 +205,7 @@ to go
               [
                 set serving-client first queue-carn
                 set queue-carn bf queue-carn
-                move-queue queue-carn
+                move-queue queue-carn-pxcor queue-carn-pycor
               ]
             ]
             [
@@ -215,7 +215,7 @@ to go
                 [
                   set serving-client first queue-caixes
                   set queue-caixes bf queue-caixes
-                  move-queue queue-caixes
+                  move-queue queue-caixes-pxcor queue-caixes-pycor
                 ]
               ]
             ]
@@ -223,11 +223,6 @@ to go
         ]
       ]
     ]
-  ]
-
-  ask clients with [prestatges-cd > 0]
-  [
-     set prestatges-cd prestatges-cd - 1
   ]
   tick
 end
@@ -245,6 +240,7 @@ to client-new
       set visited-prestatges false
       set visited-caixes false
       set prestatges-cd 0
+      rt 90
       move-client who
   ]
 end
@@ -256,7 +252,7 @@ to move-client [clt]
     ;; TODO (a la v2): Fer un algorisme de selecció de cua
     ifelse not visited-prestatges
     [
-      set prestatges-cd 20 ;; TODO: Variable o slider o min/max per al temps de prestages
+      set prestatges-cd 10 ;; TODO: Variable o slider o min/max per al temps de prestages
       set visited-prestatges true
       add-to-queue clt queue-prestatges-pxcor queue-prestatges-pycor
     ]
@@ -307,33 +303,40 @@ to move-client [clt]
 end
 
 to add-to-queue [clt pxfirst pyfirst]
-  print pxfirst
-  print pyfirst
-  ask patches with [pycor = pyfirst and pxcor < pxfirst and pxcor > pxfirst - size-queue]
-  [
-    print pycor
-    print pxcor
-    if (not any? (clients-on myself))
+  let patch-list sort patches with [pycor = pyfirst and pxcor < pxfirst and pxcor > pxfirst - size-queue]
+  foreach patch-list [
+    ask ?
     [
-      ask client clt [
-        print "Hi"
-        setxy pxcor pycor
+      let pxnew pxcor
+      if not any? (clients-on self)
+      [
+        ask client clt [
+          setxy pxnew pyfirst
+        ]
+        stop
       ]
-      stop
     ]
   ]
 end
 
-to move-queue [queue]
-  ;; TODO: avancar graficament els elements de la cua queue
-
+to move-queue [pxfirst pyfirst]
+  let patch-list sort patches with [pycor = pyfirst and pxcor < pxfirst and pxcor > pxfirst - size-queue]
+  foreach patch-list [
+    ask ?
+    [
+      let pxnew pxcor + 1
+      ask clients-on self [
+        if not any? clients-on patch-ahead 1 [setxy pxnew pyfirst]
+      ]
+    ]
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-211
-42
-676
-502
+318
+15
+783
+475
 17
 16
 13.0
@@ -357,11 +360,11 @@ ticks
 30.0
 
 BUTTON
-79
-34
-152
-67
-NIL
+9
+10
+83
+43
+Setup
 setup
 NIL
 1
@@ -449,11 +452,11 @@ persones
 HORIZONTAL
 
 BUTTON
-98
-166
-161
-199
-NIL
+11
+100
+82
+133
+Go
 go
 T
 1
@@ -466,29 +469,12 @@ NIL
 1
 
 BUTTON
-53
-113
-118
-146
+10
+55
+82
+88
 Step
 go
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-88
-304
-190
-337
-NIL
-add-fruita
 NIL
 1
 T
