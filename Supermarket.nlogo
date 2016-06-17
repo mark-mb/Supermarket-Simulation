@@ -47,7 +47,6 @@ treballadors-own [
 ]
 
 clients-own [
-  age
   visited-carn
   visited-peix
   visited-forn
@@ -141,11 +140,6 @@ end
 
 ;; GO
 to go
-  ask clients with [label != "dead"]
-  [
-    set age age + 1
-  ]
-
   set client-cd (client-cd - 1)
   if client-cd = 0
   [
@@ -295,8 +289,7 @@ to move-client [clt]
                 add-to-queue clt queue-caixes-pxcor queue-caixes-pycor
               ]
               [
-                set label "dead"
-                set hidden? true
+                die
               ]
             ]
           ]
@@ -389,7 +382,7 @@ num-treb-carn
 num-treb-carn
 1
 10
-3
+1
 1
 1
 persones
@@ -404,7 +397,7 @@ num-treb-fruita
 num-treb-fruita
 1
 10
-3
+1
 1
 1
 persones
@@ -419,7 +412,7 @@ num-treb-peix
 num-treb-peix
 1
 10
-1
+4
 1
 1
 persones
@@ -434,7 +427,7 @@ num-treb-forn
 num-treb-forn
 1
 10
-1
+4
 1
 1
 persones
@@ -508,7 +501,7 @@ temps-carn
 temps-carn
 0
 500
-350
+250
 10
 1
 sec
@@ -523,7 +516,7 @@ marge-temps-carn
 marge-temps-carn
 0
 100
-50
+51
 1
 1
 sec
@@ -548,7 +541,7 @@ temps-peix
 temps-peix
 0
 500
-200
+240
 10
 1
 sec
@@ -563,7 +556,7 @@ marge-temps-peix
 marge-temps-peix
 0
 100
-50
+49
 1
 1
 NIL
@@ -588,7 +581,7 @@ temps-fruita
 temps-fruita
 0
 500
-250
+240
 10
 1
 sec
@@ -603,7 +596,7 @@ marge-temps-fruita
 marge-temps-fruita
 0
 100
-50
+51
 1
 1
 NIL
@@ -628,7 +621,7 @@ temps-forn
 temps-forn
 0
 500
-150
+240
 10
 1
 sec
@@ -668,7 +661,7 @@ temps-caixes
 temps-caixes
 0
 500
-250
+240
 10
 1
 sec
@@ -708,7 +701,7 @@ temps-prestatges
 temps-prestatges
 0
 500
-300
+500
 10
 1
 sec
@@ -760,7 +753,7 @@ temps-entrada
 temps-entrada
 0
 1000
-390
+110
 10
 1
 sec
@@ -780,24 +773,6 @@ marge-temps-entrada
 1
 sec
 HORIZONTAL
-
-PLOT
-591
-296
-1081
-582
-Histograma temps de servei clients
-Temps
-Frequencia
-0.0
-3000.0
-0.0
-10.0
-true
-false
-"" "set-histogram-num-bars 10"
-PENS
-"age" 1.0 1 -2674135 true "" "histogram [age] of clients with [label = \"dead\"]"
 
 @#$#@#$#@
 ## QUÈ ÉS?
@@ -823,6 +798,44 @@ S’ha decidit separar la representació gràfica del model amb la representaci�
 
 ## REPRESENTACIÓ
 S’ha especificat cada zona com una gran columna, pretenent imitar un mostrador. En inicialitzar el model, a cada mostrador de cada zona es posicionen tants treballadors com s’hagin especificat als sliders.
+
+Finalment, les cues es representen a l’esquerra del mostrador com a una fila horitzontal de color turquesa.
+
+
+
+
+
+##EXPERIMENTACIÓ
+
+Els gràfics es poden veure en el pdf adjunt.
+
+Tots els experiments s’han fet tenint en compte que només hi ha 20 empleats al supermercat i que els temps de servei per a totes les zones són el mateix.
+En el primer experiment el que hem fet és repartir els 20 empleats entre totes les botigues de dins el supermercat. Al ser 5, toquen 4 empleats per a cada una. Aquesta simulació l’hem fet amb un temps de servei normal però amb molt poc temps entre arribades.
+
+Com podem veure en el gràfic resultant, hi ha una mitjana de 2 persones a les cues, però com es pot observar, no hi ha cap zona que relantitziespecialment les vendes.
+
+
+
+El segon experiment que hem dut a terme és pràcticament igual que el primer malgrat el temps entre arribades, que l’hem augmentat considerablement. En el gràfic resultant podem veure com la mitjana de clients a les cues és pràcticament 0 i hi ha algun cop que arriba a haver-hi una persona. De la mateixa manera que en el primer experiment podem veure com els colors de la gràfica estàn completament distribuits.
+
+
+
+En el tercer experiment, hem volgut comprovar que passava si reduíem el nombre de dependents d’una zona. D’aquesta manera, s’ha tornat a augmentar el temps entre arribades general i s’ha reduït el número de dependents de la carnisseria a 1.
+
+Tal i com es pot veure en la gràfica dels resultats, les persones de la cua de la carnisseria es disparen ja que aquesta no és capaç d’absorbir tota la càrrega de clients amb un dependent i prou.
+
+
+
+En l’últim experiment, hem volgut comprovar quin és el comportament de la simulació en el cas de que hi hagi dos zones amb pocs dependents. D’aquesta manera hem decidit deixar tant la carnisseria com la fruiteria amb només una persona.
+
+Els resultats obtinguts es poden veure en la següent gràfica i el que podem observar és que la cua de la fruiteria es dispara mentre que la cua de la carnisseria no. Tot i que aquesta última no es dispari aquesta sempre té una persona, i a vegades dues a la cua.
+
+Aquest comportament és degut a que la fruiteria està al principi del supermercat i per tant la gent primer passa per aquesta zona. Per tant aquesta zona fa de filtre i la gent no s’acumula a les altres. És per aquesta raó que encara que tant la fruiteria com la carnisseria tinguin el mateix nombre de dependents, a la fruiteria s’hi acumula molta més gent.
+
+
+
+De l’anàlisi dels resultats d’aquests experiments, podem concloure que el millor rendiment s’obté quan el nombre de dependents és similar en totes les zones.
+
 @#$#@#$#@
 default
 true
